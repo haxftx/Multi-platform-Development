@@ -1,0 +1,58 @@
+Multi-platform Development: implementarea lui gcc -E
+
+Programul respectiv este o preprocesare a unui program C, unde in linia de
+comanda poate primi parametrii compilatorului precum -D, -I, -o si maxim 2
+fisiere care primul va fi de input, iar cel de-al 2-lea de output. Default
+fisierul de intrare este stdin, iar de iesire stdout, daca se specifica in
+linia de comanda sunt modificate sau nu. Citeste din fisier sau stdin si 
+scrie la stdout sau fisier. Programul rezolva directivele #define(care poate
+fi simplu, pe mai multe linii si sa contina un alt define), #include (doar 
+pentru headere) pe care il rezolva recursiv, #if <CONDITIE>, #elfi <CONDITIE>,
+#else, #ifdef <SIMBOL>, #ifndef <SIMBOL> (cu o singura ramura sau mai multe)
+unde CONDITIE este evaluata doar la un numar de la inceput(verifica doar daca
+incepe cu un numar), iar SIMBOL este cautat in hashmap. Dupa ce trece de aceste
+directive programul inlocuieste variabilele cu cele salvate in hashmap.
+
+Structura de date(HashMap) l-am implementat folosind o Structura care contine
+un vector de liste, lungimea vectorului, funtia de comparare a cheilor si o
+funtie de hash pentru a gasi intrarea in vector. Functia de hash este
+implementata prin returnarea valorii din tabela ASCII, pentru literele
+minuscule returneaza [0:25], pentru majuscule [26:51] iar pentru restul
+caracterelor cu care poate incepe o variabila in C 52. In tema respectiva
+fisierele nu era tare mari si nu ajungeam sa am o contitate mare de informatie
+in hashmap, dar pentru acesta puteam sa redimensionez vectorul de liste din
+hashmap, iar funtia de hash sa fie pe 2 caractere, etc.. HashMap-l are funtiile
+de initializare, adaugare(cheie-valoare), gasire a unei chei respectiv stergere
+a structurii, stergere a unei chei. Pentru cheie-valoare am folosit o structura
+din 2 siruri de caractere iar pentru liste am folosit lista simplu inlantuita
+cu informatia din lista de tip pereche, unde exista funtiile de creare si
+sterge a unei perechi, celule si stergerea listelor din vectorul hashmap-ului.
+
+Rezolvarea am inceput-o prin creeare structurii de hashmap apoi am m-am
+apucat sa prelucrez parametrii programului parsati prin linia de comanda, unde
+pentru fiecare -D adaugam o noua intrare in hashmap, pentru -I adaugam un nou
+director la lista de directoare, iar pentru -o modificam fisierul de iesire
+a programului, daca mai exista ca parametru fisiere modific si fisierul de
+intrare respectiv de iesire daca nu exista -o si sunt 2 fisiere ca parametru.
+Daca un fisier de citire nu este gasit, se trimit mai multe de 2 fisiere sau
+trimitem ca parametru altceva programul se termina cu codul de eroare -1.
+Dupa preprocesarea parametrilor citeste din fisier sau stdin linie cu linie
+si daca e o directiva rezolva directiva, daca nu inlocuieste define-urile de pe
+linia respectiva si scrie in fisier sau stdout. Pentru #include daca nu sunt
+intr-un bloc de #if, #elif, #ifdef, #ifndef, #else care este fals apelez funtia
+f_include care cauta fisierul in toate directoarele si apoi procesez fisierul.
+Pentr #define la fel apelez funtia f_define care afla de pe linia respectiva
+sau de pe linia respectiva + urmatoarele linii cheia si valoarea pe care o
+adaug in hashmap. Pentru #undef la fel sterg cheia din hashmap. Pentru #elif
+daca deja am avut inainte un if adevarat merg la finalul if-lui, daca nu
+verific conditia, Pentru #else la fel. Pentru #endif resetez starea de if.
+Pentru #ifdef daca exista variabila ma aflu in starea de ifdef adevarat, daca
+nu ma aflu in starea de ifdef false. Pentru #ifndef e complementar cu #ifdef.
+Pentru #if daca condiita e adevarat ma aflu intr-un if adevarat daca nu ma aflu
+in bloc de if.
+Pentru lista de directoare am folosit o structura dintr-un vector de stringuri,
+pozitie si lungime, pentru redeminsionare permanenta cand pozitia devine egala
+cu lungimea, respectiv cu funtia de adaugare si eliberare a memoriei.
+
+Toate funtiile de alocare sunt verificate si in caz de eroare programul se
+termina cu codul de eroare 12.
